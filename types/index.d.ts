@@ -81,3 +81,8 @@ interface CompanionComponentProps {
   voice: string;
   style: string;
 }
+
+export type NavItems = Array<{
+	label: string;
+	href: string;
+}>;
