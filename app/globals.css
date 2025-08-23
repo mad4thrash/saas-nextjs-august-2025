@@ -131,7 +131,7 @@ body {
     @apply bg-background text-foreground flex flex-col min-h-screen;
   }
   main {
-    @apply mx-auto px-14 flex flex-col gap-8 bg-background max-w-[1400px] pt-10 max-sm:px-2 flex-1;
+    @apply mx-auto px-14 flex flex-col gap-8 bg-background max-w-[1400px] pt-10 max-sm:px-2 flex-1 mb-8;
   }
   footer {
     @apply mt-auto;
