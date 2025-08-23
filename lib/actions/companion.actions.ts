@@ -43,3 +43,19 @@ if (error) {
 
 return companions;
 }
+
+export const getCompanion = async (id: string) => {
+    const supabase = await createSupabaseClient();
+
+    const {data: companion, error} = await supabase
+        .from("companions")
+        .select()
+        .eq("id", id)
+        .single();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return companion;
+}
