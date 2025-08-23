@@ -3,6 +3,7 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import {
@@ -23,9 +24,12 @@ import {
 } from "@/components/ui/select";
 import { subjects } from "@/constants";
 import { Textarea } from "./ui/textarea";
+import { createCompanion } from "@/lib/actions/companion.actions";
+import { useRouter } from "next/navigation";
 
 const CompanionForm = () => {
 	const [isLoading, setIsLoading] = useState(false);
+	const router = useRouter();
 
 	const formSchema = z.object({
 		name: z.string().min(1, { message: "Companion is required." }),
@@ -50,16 +54,23 @@ const CompanionForm = () => {
 		},
 	});
 
-	const onSubmit = (data: z.infer<typeof formSchema>) => {
+	const onSubmit = async (data: z.infer<typeof formSchema>) => {
 		setIsLoading(true);
-		setTimeout(() => {
-			console.log(data);
+		try {
+			const companion = await createCompanion(data);
+			if (companion) {
+				toast.success("Companion created successfully!");
+				router.push(`/companions/${companion.id}`);
+			}
+		} catch (error: any) {
+			toast.error(error.message);
+		} finally {
 			setIsLoading(false);
-		}, 1500);
+		}
 	};
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 mb-8">
 				<FormField
 					control={form.control}
 					name="name"

@@ -4,6 +4,7 @@ import NavBar from "@/components/NavBar";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "@/components/ui/sonner";
 
 const bricolage = Bricolage_Grotesque({
 	variable: "--font-bricolage",
@@ -28,6 +29,7 @@ export default function RootLayout({
 					{children}
 					<Footer />
 				</ClerkProvider>
+				<Toaster />
 			</body>
 		</html>
 	);
