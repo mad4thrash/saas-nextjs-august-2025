@@ -2,7 +2,7 @@
 
 import { cn, configureAssistant, getSubjectColor } from "@/lib/utils";
 import { vapi } from "@/lib/vapi.sdk";
-import { type CompanionComponentProps } from "@/types";
+import { SavedMessage, type CompanionComponentProps } from "@/types";
 import Lottie, { LottieRefCurrentProps } from "lottie-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -24,6 +24,7 @@ const COmpanionComponent = ({
 	const [callStatus, setCallStatus] = useState<CallStatus>(CallStatus.INACTIVE);
 	const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 	const [isMuted, setIsMuted] = useState<boolean>(false);
+	const [messages, setMessages] = useState<SavedMessage[]>([]);
 
 	const { subject, topic, name, voice, style } = companion;
 
@@ -35,7 +36,7 @@ const COmpanionComponent = ({
 		setIsMuted(!isMuted);
 	};
 
-	const handleCall = async () => {
+	const handleCall = () => {
 		setCallStatus(CallStatus.CONNECTING);
 
 		const assistantOverrides = {
@@ -46,16 +47,16 @@ const COmpanionComponent = ({
 			},
 
 			clientMessages: ["transcript"],
-			serverMessages: [],
+			serverMessages: [...messages],
 		};
 		// @ts-expect-error
 		vapi.start(configureAssistant(voice, style), assistantOverrides);
 	};
 
-	const handleDisconnect = async () => {
-		if (callStatus === CallStatus.ACTIVE) {
-			await vapi.stop();
-		}
+	const handleDisconnect = () => {
+		setCallStatus(CallStatus.FINISHED);
+
+		vapi.stop();
 	};
 
 	useEffect(() => {
@@ -73,7 +74,13 @@ const COmpanionComponent = ({
 
 		const onCallEnd = () => setCallStatus(CallStatus.FINISHED);
 
-		const onMessage = () => {};
+		const onMessage = (message: Message) => {
+			if (message.type === "transcript" && message.transcriptType === "final") {
+				const newMessage = { role: message.role, content: message.transcript };
+
+				setMessages((prevMessages) => [...prevMessages, newMessage]);
+			}
+		};
 
 		const onSpeechStart = () => setIsSpeaking(true);
 
@@ -182,7 +189,21 @@ const COmpanionComponent = ({
 				</div>
 			</section>
 			<section className="transcript">
-				<div className="transcript-message no-scrollbar">Message</div>
+				<div className="transcript-message no-scrollbar">
+					{messages.map((message, index) => {
+						return (
+							<p
+								key={index}
+								className={cn(
+									"max-sm:text-sm",
+									message.role === "user" ? "text-right" : "text-left"
+								)}
+							>
+								{name.split(" ")[0].replace(/[.,]/g, "")}: {message.content}
+							</p>
+						);
+					})}
+				</div>
 				<div className="transcript-fade" />
 			</section>
 		</section>
