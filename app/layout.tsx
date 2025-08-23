@@ -27,7 +27,6 @@ export default function RootLayout({
 				<ClerkProvider appearance={{ variables: { colorPrimary: "#fe5933" } }}>
 					<NavBar />
 					{children}
-					<Footer />
 				</ClerkProvider>
 				<Toaster />
 			</body>
