@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/saas-exercise/saas-aug-2025",
+      "type": "http"
+    }
+  }
+}
